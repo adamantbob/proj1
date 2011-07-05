@@ -148,6 +148,7 @@ public class PictureTest extends TestCase {
 		Picture picCorrect	= Picture.loadPicture("Creek_blur.bmp");
 		Picture picTest		= pic.blur(3);
 		assertTrue(pic.equals(picCopy));
+		picTest.show();
 		assertTrue(picCorrect.equals(picTest));
 	}
 	/*
@@ -226,7 +227,7 @@ public class PictureTest extends TestCase {
 	 * Tests the color changing a solid color:
 	 * addRed
 	 */
-	public void testColorTranslationsReder()
+	public void testColorTranslationsRedder()
 	{
 		Picture pic = Picture.loadPicture("Gray.bmp");
 		Picture reder = Picture.loadPicture("Gray_more_red.bmp");
@@ -244,6 +245,7 @@ public class PictureTest extends TestCase {
 		Picture picCorrect	= Picture.loadPicture("Colleen_paintBucket.bmp");
 		Picture picTest		= pic.paintBucket(118, 54, 30, new Color(0, 255, 0));
 		assertTrue(pic.equals(picCopy));
+		picTest.show();
 		assertTrue(picCorrect.equals(picTest));
 	}
 	/*

@@ -1,5 +1,7 @@
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * A class that represents a picture.  This class inherits from SimplePicture
@@ -190,10 +192,19 @@ public class Picture extends SimplePicture
 	 * @return A new Picture that is the photonegative version of this Picture. 
 	 */
 	public Picture negate() {
-		// REPLACE THE CODE BELOW WITH YOUR OWN.
-		return new Picture(this);
+		Picture newPicture = new Picture(this);
+		
+		int pictureHeight = this.getHeight();
+		int pictureWidth = this.getWidth();
+
+		for(int x = 0; x < pictureWidth; x++) {
+			for(int y = 0; y < pictureHeight; y++) {
+				Pixel p = new Pixel(newPicture, x, y);
+				p.updatePicture(p.getAlpha(), 255-p.getRed(), 255-p.getGreen(), 255-p.getBlue());
+			}
+		}
+		return newPicture;
 	}
-	
 	/**
 	 * Creates an image that is lighter than the original image. The range of
 	 * each color component should be between 0 and 255 in the new image. The
@@ -203,8 +214,18 @@ public class Picture extends SimplePicture
 	 *         by the lightenAmount.
 	 */
 	public Picture lighten(int lightenAmount) {
-		// REPLACE THE CODE BELOW WITH YOUR OWN.
-		return new Picture(this);
+		Picture newPicture = new Picture(this);
+		
+		int pictureHeight = this.getHeight();
+		int pictureWidth = this.getWidth();
+
+		for(int x = 0; x < pictureWidth; x++) {
+			for(int y = 0; y < pictureHeight; y++) {
+				Pixel p = new Pixel(newPicture, x, y);
+				p.updatePicture(p.getAlpha(), p.getRed() + lightenAmount, p.getGreen() + lightenAmount, p.getBlue() + lightenAmount);
+			}
+		}
+		return newPicture;
 	}
 
 	/**
@@ -215,10 +236,20 @@ public class Picture extends SimplePicture
 	 * @return A new Picture that has every color value of the Picture decreased
 	 *         by the darkenenAmount.
 	 */
-	public Picture darken(int darkenenAmount) {
-		// REPLACE THE CODE BELOW WITH YOUR OWN.
-		return new Picture(this);
+	public Picture darken(int darkenAmount) {
+		Picture newPicture = new Picture(this);
+	
+	int pictureHeight = this.getHeight();
+	int pictureWidth = this.getWidth();
+
+	for(int x = 0; x < pictureWidth; x++) {
+		for(int y = 0; y < pictureHeight; y++) {
+			Pixel p = new Pixel(newPicture, x, y);
+			p.updatePicture(p.getAlpha(), p.getRed() - darkenAmount, p.getGreen() - darkenAmount, p.getBlue() -darkenAmount);
+		}
 	}
+	return newPicture;
+}
 
 	/**
 	 * Creates an image where the blue value has been increased by amount.The range of
@@ -229,9 +260,19 @@ public class Picture extends SimplePicture
 	 *         by amount.
 	 */
 	public Picture addBlue(int amount) {
-		// REPLACE THE CODE BELOW WITH YOUR OWN.
-		return new Picture(this);
+		Picture newPicture = new Picture(this);
+	
+	int pictureHeight = this.getHeight();
+	int pictureWidth = this.getWidth();
+
+	for(int x = 0; x < pictureWidth; x++) {
+		for(int y = 0; y < pictureHeight; y++) {
+			Pixel p = new Pixel(newPicture, x, y);
+			p.updatePicture(p.getAlpha(), p.getRed(), p.getGreen(), p.getBlue() + amount);
+		}
 	}
+	return newPicture;
+}
 	
 	/**
 	 * Creates an image where the red value has been increased by amount. The range of
@@ -242,9 +283,20 @@ public class Picture extends SimplePicture
 	 *         by amount.
 	 */
 	public Picture addRed(int amount) {
-		// REPLACE THE CODE BELOW WITH YOUR OWN.
-		return new Picture(this);
+		Picture newPicture = new Picture(this);
+
+		int pictureHeight = this.getHeight();
+		int pictureWidth = this.getWidth();
+
+		for(int x = 0; x < pictureWidth; x++) {
+			for(int y = 0; y < pictureHeight; y++) {
+				Pixel p = new Pixel(newPicture, x, y);
+				p.updatePicture(p.getAlpha(), p.getRed() + amount, p.getGreen(), p.getBlue());
+			}
+		}
+		return newPicture;
 	}
+
 	
 	/**
 	 * Creates an image where the green value has been increased by amount. The range of
@@ -255,13 +307,23 @@ public class Picture extends SimplePicture
 	 *         by amount.
 	 */
 	public Picture addGreen(int amount) {
-		// REPLACE THE CODE BELOW WITH YOUR OWN.
-		return new Picture(this);
+		Picture newPicture = new Picture(this);
+
+		int pictureHeight = this.getHeight();
+		int pictureWidth = this.getWidth();
+
+		for(int x = 0; x < pictureWidth; x++) {
+			for(int y = 0; y < pictureHeight; y++) {
+				Pixel p = new Pixel(newPicture, x, y);
+				p.updatePicture(p.getAlpha(), p.getRed(), p.getGreen() + amount, p.getBlue());
+			}
+		}
+		return newPicture;
 	}
 	
 	/** 
-	 * @param x x-coordinate of the pixel currently selected.
-	 * @param y y-coordinate of the pixel currently selected.
+	 * @param xReference x-coordinate of the pixel currently selected.
+	 * @param yReference y-coordinate of the pixel currently selected.
 	 * @param background Picture to use as the background.
 	 * @param threshold Threshold within which to replace pixels.
 	 * 
@@ -276,11 +338,25 @@ public class Picture extends SimplePicture
 	 * 	In this case, the Pictures are combined as if they were aligned at
 	 * 	the top left corner (0, 0).
 	 */
-	public Picture chromaKey(int xRef, int yRef, Picture background, int threshold) {
-		/* REPLACE THE CODE BELOW WITH YOUR OWN. */
-		return new Picture(this);
-	}
+	public Picture chromaKey(int xReference, int yReference, Picture background, int threshold) {
+		Picture newPicture = new Picture(this);
+		Pixel base = new Pixel(this, xReference, yReference);
 
+
+		int pictureHeight = this.getHeight() > background.getHeight() ? background.getHeight() : this.getHeight();
+		int pictureWidth = this.getWidth() > background.getWidth() ? background.getWidth() : this.getWidth();
+		
+		for(int x = 0; x < pictureWidth; x++) {
+			for(int y = 0; y < pictureHeight; y++) {
+				Pixel p = new Pixel(newPicture, x, y);
+				if((int) p.colorDistance(base.getColor()) < threshold){
+					Pixel b = new Pixel(background, x, y);
+					p.setColor(b.getColor());
+				}
+			}
+		}
+		return newPicture;
+	}
 	//////////////////////////////// Level 2 //////////////////////////////////
 
 	/**
@@ -296,8 +372,47 @@ public class Picture extends SimplePicture
 	 * @return A new Picture that is the rotated version of this Picture.
 	 */
 	public Picture rotate(int rotations) {
-		// REPLACE THE CODE BELOW WITH YOUR OWN.
-		return new Picture(this);
+		int adjustedRots = rotations % 4;
+		if(adjustedRots < 0){
+			adjustedRots += 4;
+		}
+		int picHeight = this.getHeight();
+		int picWidth = this.getWidth();
+		Picture newPicture = null;
+		switch(adjustedRots){
+		case 0: return this;
+		case 1: 
+			newPicture = new Picture(picHeight, picWidth);
+			for(int x = 0; x < picWidth; x++){
+				for(int y = 0; y < picHeight; y++){
+					Pixel old = new Pixel(this, x, y); 
+					Pixel fresh = new Pixel(newPicture, picHeight-1-y, x);
+					fresh.updatePicture(old.getAlpha(), old.getRed(), old.getGreen(), old.getBlue());
+				}
+			}
+			break;
+		case 2:
+			newPicture = new Picture(picWidth, picHeight);
+			for(int x = 0; x < picWidth; x++){
+				for(int y = 0; y < picHeight; y++){
+					Pixel old = this.getPixel(x, y); 
+					Pixel fresh = newPicture.getPixel(picWidth-1-x, picHeight-1-y);
+					fresh.updatePicture(old.getAlpha(), old.getRed(), old.getGreen(), old.getBlue());
+				}
+			}
+			break;
+		case 3:
+			newPicture = new Picture(picHeight, picWidth);
+			for(int x = 0; x < picWidth; x++){
+				for(int y = 0; y < picHeight; y++){
+					Pixel old = this.getPixel(x, y); 
+					Pixel fresh = newPicture.getPixel(y, picWidth-1-x);
+					fresh.updatePicture(old.getAlpha(), old.getRed(), old.getGreen(), old.getBlue());
+				}
+			}
+			break;
+		}
+		return newPicture;
 	}
 
 	/**
@@ -320,8 +435,53 @@ public class Picture extends SimplePicture
 	 * @return A new Picture flipped about the axis provided.
 	 */
 	public Picture flip(int axis) {
-		// REPLACE THE CODE BELOW WITH YOUR OWN.
-		return new Picture(this);
+		Picture newPicture;
+		int picHeight = this.getHeight();
+		int picWidth = this.getWidth();
+		switch(axis){
+		case Picture.HORIZONTAL:
+			newPicture = new Picture(picWidth, picHeight);
+			for(int x = 0; x < picWidth; x++){
+				for(int y = 0; y < picHeight; y++){
+					Pixel p = new Pixel(newPicture, x, picHeight - 1 - y);
+					Pixel old = new Pixel(this, x, y);
+					p.updatePicture(old.getAlpha(), old.getRed(), old.getGreen(), old.getBlue());
+				}
+			}
+			return newPicture;
+		case Picture.VERTICAL:
+			newPicture = new Picture(picWidth, picHeight);
+			for(int x = 0; x < picWidth; x++){
+				for(int y = 0; y < picHeight; y++){
+					Pixel p = new Pixel(newPicture, picWidth - 1 - x, y);
+					Pixel old = new Pixel(this, x, y);
+					p.updatePicture(old.getAlpha(), old.getRed(), old.getGreen(), old.getBlue());
+				}
+			}
+			return newPicture;
+		case Picture.FORWARD_DIAGONAL:
+			newPicture = new Picture(picHeight, picWidth);
+			for(int x = 0; x < picWidth; x++){
+				for(int y = 0; y < picHeight; y++){
+					Pixel p = new Pixel(newPicture, picHeight - 1 - y, picWidth - 1 - x);
+					Pixel old = new Pixel(this, x, y);
+					p.updatePicture(old.getAlpha(), old.getRed(), old.getGreen(), old.getBlue());
+				}
+			}
+			return newPicture;
+		case Picture.BACKWARD_DIAGONAL:
+			newPicture = new Picture(picHeight, picWidth);
+			for(int x = 0; x < picWidth; x++){
+				for(int y = 0; y < picHeight; y++){
+					Pixel p = new Pixel(newPicture, y, x);
+					Pixel old = new Pixel(this, x, y);
+					p.updatePicture(old.getAlpha(), old.getRed(), old.getGreen(), old.getBlue());
+				}
+			}
+			return newPicture;
+		default:
+			return this;
+		}
 	}
 
 	/**
@@ -342,8 +502,40 @@ public class Picture extends SimplePicture
 	 *         white.
 	 */
 	public Picture showEdges(int threshold) {
-		/* REPLACE THE CODE BELOW WITH YOUR OWN. */
-		return new Picture(this);
+		Picture newPicture = new Picture(this);
+		int picWidth = newPicture.getWidth();
+		int picHeight = newPicture.getHeight();
+		for(int x = 1; x < picWidth; x++){
+			Pixel testPoint = new Pixel(newPicture, x, 0);
+			Pixel reference2 = new Pixel(this, x-1, 0);
+			if(((int) testPoint.colorDistance(reference2.getColor())) > threshold)
+				testPoint.updatePicture(255, 0, 0, 0);
+			else
+				testPoint.updatePicture(255, 255, 255, 255);
+		}
+		for(int y = 1; y < picHeight; y++){
+			Pixel testPoint = new Pixel(newPicture, 0, y);
+			Pixel reference1 = new Pixel(this, 0, y-1);
+			if(((int) testPoint.colorDistance(reference1.getColor())) > threshold)
+				testPoint.updatePicture(255, 0, 0, 0);
+			else
+				testPoint.updatePicture(255, 255, 255, 255);
+		}
+		for(int x = 1; x < picWidth; x++){
+			for(int y = 1; y < picHeight; y++){
+				Pixel testPoint = new Pixel(newPicture, x, y);
+				Pixel reference1 = new Pixel(this, x, y-1);
+				Pixel reference2 = new Pixel(this, x-1, y);
+				if(((int) testPoint.colorDistance(reference1.getColor())) > threshold || 
+						((int) testPoint.colorDistance(reference2.getColor())) > threshold){
+					testPoint.updatePicture(255, 0, 0, 0);
+						
+				} else
+					testPoint.updatePicture(255, 255, 255, 255);
+			}
+		}
+		newPicture.setBasicPixel(0, 0, new Color(255, 255, 255).getRGB());
+		return newPicture;
 	}
 
 	//////////////////////////////// Level 3 //////////////////////////////////
@@ -384,8 +576,35 @@ public class Picture extends SimplePicture
 	 * 	partially copied to the final Picture. 
 	 */
 	public Picture convertToAscii() {
-		/* REPLACE THE CODE BELOW WITH YOUR OWN. */
-		return new Picture(this);
+		Picture newPicture = grayscale();
+		int picHeight = newPicture.getHeight();
+		int picWidth = newPicture.getWidth();
+		for(int x = 0; x < picWidth; x+=10){
+			for(int y = 0; y < picHeight; y+=20){
+				int average = 0;
+				int pixCount = 0;
+				for(int i = 0; i < 10; i++){
+					if(x+i == picWidth) break;
+					for(int j = 0; j < 20; j++){
+						if(y+j == picHeight) break;
+						pixCount++;
+						average += newPicture.getPixel(x+i, y+j).getRed();
+					}
+				}
+				average /= pixCount;
+				Picture ascii = getAsciiPic(average);
+				for(int i = 0; i < 10; i++){
+					if(x+i == picWidth) break;
+					for(int j = 0; j < 20; j++){
+						if(y+j == picHeight) break;
+						Pixel old = newPicture.getPixel(x+i, y+j);
+						Pixel fresh = ascii.getPixel(i, j);
+						old.updatePicture(fresh.getAlpha(), fresh.getRed(), fresh.getGreen(), fresh.getBlue());
+					}
+				}
+			}
+		}
+		return newPicture;
 	}
 
 	/**
@@ -407,15 +626,52 @@ public class Picture extends SimplePicture
 	 * @return A new Picture that is the blurred version of this Picture, using
 	 *         a blurring square of size (2 * threshold) + 1.
 	 */
-	public Picture blur(int blurThreshold) {
-		/* REPLACE THE CODE BELOW WITH YOUR OWN. */
-		return new Picture(this);
+	public Picture blur(int blurThreshold){
+		Picture newPicture = new Picture(this);
+		int picHeight = newPicture.getHeight();
+		int picWidth = newPicture.getWidth();
+		for(int x = 0; x < picWidth; x++){
+			for(int y = 0; y < picHeight; y++){
+				int i;
+				if(x - blurThreshold < 0)
+					i = x * -1;
+				else 
+					i = blurThreshold*-1;
+				Pixel testPix = newPicture.getPixel(x, y);
+				int aveA = 0, aveR = 0, aveG = 0, aveB = 0, pixCount = 0;
+				while(i <= blurThreshold){
+					if(x+i == picWidth) break;
+					int j;
+					if(y - blurThreshold < 0)
+						j = y * -1;
+					else
+						j = blurThreshold * -1;
+					
+					while(j <= blurThreshold){
+						if(y+j == picHeight) break;
+						Pixel ref = this.getPixel(x+i, y+j);
+						aveA += ref.getAlpha();
+						aveR += ref.getRed();
+						aveG += ref.getGreen();
+						aveB += ref.getBlue();
+						pixCount++;
+						j++;
+					}
+					i++;
+				}
+				aveA /= pixCount;
+				aveR /= pixCount;
+				aveG /= pixCount;
+				aveB /= pixCount;
+				testPix.updatePicture(aveA, aveR, aveG, aveB);
+			}
+		}
+		return newPicture;
 	}
 
-
 	/**
-	 * @param x x-coordinate of the pixel currently selected.
-	 * @param y y-coordinate of the pixel currently selected.
+	 * @param xReference x-coordinate of the pixel currently selected.
+	 * @param yReference y-coordinate of the pixel currently selected.
 	 * @param threshold Threshold within which to delete pixels.
 	 * @param newColor New color to color pixels.
 	 * 
@@ -424,11 +680,92 @@ public class Picture extends SimplePicture
 	 * 	provided threshold (in terms of color distance), are colored with
 	 * 	the new color provided. 
 	 */
-	public Picture paintBucket(int x, int y, int threshold, Color newColor) {
-		/* REPLACE THE CODE BELOW WITH YOUR OWN. */
-		return new Picture(this);
-	}
+	public Picture paintBucket(int xReference, int yReference, int threshold, Color newColor) {
+		Picture newPicture = new Picture(this);
+		Pixel base = new Pixel(this, xReference, yReference);
+		int picHeight = this.getHeight();
+		int picWidth = this.getWidth();
 
+		int x = 0, y = 0;
+		ArrayList<Point> queue = new ArrayList<Point>();
+		Point temp = new Point(xReference, yReference);
+		queue.add(temp);
+		for(int i = 0; i < queue.size(); i++){
+			Point point = queue.get(i);
+			x = point.x;
+			y = point.y;
+			Pixel current = newPicture.getPixel(x, y);
+			current.setColor(newColor);
+			
+
+			Point e = new Point(x+1, y);
+			if(!queue.contains(e))
+				if(x + 1 < picWidth){
+					Pixel east = this.getPixel(x + 1, y);
+					if(((int) east.colorDistance(base.getColor())) < threshold){
+						queue.add(e);
+					}
+				}
+			Point w = new Point(x-1, y);
+			if(!queue.contains(w))
+				if(x - 1 >= 0){
+					Pixel west = this.getPixel(x - 1, y);
+					if(((int) west.colorDistance(base.getColor())) < threshold){
+						queue.add(w);
+					}
+				}
+			Point s = new Point(x, y+1);
+			if(!queue.contains(s))
+				if(y + 1 < picHeight){
+					Pixel east = this.getPixel(x, y + 1);
+					if(((int) east.colorDistance(base.getColor())) < threshold){
+						queue.add(s);
+					}
+				}
+			Point n = new Point(x, y-1);
+			if(!queue.contains(n))
+				if(y - 1 >= 0){
+					Pixel east = this.getPixel(x, y - 1);
+					if(((int) east.colorDistance(base.getColor())) < threshold){
+						queue.add(n);
+					}
+				}
+			Point nw = new Point(x-1, y-1);
+			if(!queue.contains(nw))
+				if(y - 1 >= 0 && x - 1 >= 0){
+					Pixel northWest = this.getPixel(x - 1, y - 1);
+					if(((int) northWest.colorDistance(base.getColor())) < threshold){
+						queue.add(nw);
+					}
+				}
+			Point ne = new Point(x+1, y-1);
+			if(!queue.contains(ne))
+				if(y - 1 >= 0 && x + 1 < picWidth){
+					Pixel northEast = this.getPixel(x + 1, y - 1);
+					if(((int) northEast.colorDistance(base.getColor())) < threshold){
+						queue.add(ne);
+					}
+				}
+			Point sw = new Point(x-1, y+1);
+			if(!queue.contains(sw))
+				if(y + 1 < picHeight && x - 1 >= 0){
+					Pixel southWest = this.getPixel(x - 1, y + 1);
+					if(((int) southWest.colorDistance(base.getColor())) < threshold){
+						queue.add(sw);
+					}
+				}
+			Point se = new Point(x+1, y+1);
+			if(!queue.contains(se))
+				if(y + 1 < picHeight && x + 1 < picWidth){
+					Pixel southEast = this.getPixel(x + 1, y + 1);
+					if(((int) southEast.colorDistance(base.getColor())) < threshold){
+						queue.add(se);
+					}
+				}
+		}
+		return newPicture;
+	}
+	
 	///////////////////////// PROJECT 1 ENDS HERE /////////////////////////////
 
 	public boolean equals(Object obj) {
@@ -447,6 +784,7 @@ public class Picture extends SimplePicture
 		for (int x = 0; x < this.getWidth(); x++) {
 			for(int y = 0; y < this.getHeight(); y++) {
 				if (!this.getPixel(x, y).equals(p.getPixel(x, y))) {
+					System.out.println(x + ", " + y);
 					return false;
 				}
 			}
