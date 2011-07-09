@@ -1,5 +1,4 @@
 import java.awt.Color;
-import java.awt.Point;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -632,22 +631,11 @@ public class Picture extends SimplePicture
 		int picWidth = newPicture.getWidth();
 		for(int x = 0; x < picWidth; x++){
 			for(int y = 0; y < picHeight; y++){
-				int i;
-				if(x - blurThreshold < 0)
-					i = x * -1;
-				else 
-					i = blurThreshold*-1;
 				Pixel testPix = newPicture.getPixel(x, y);
 				int aveA = 0, aveR = 0, aveG = 0, aveB = 0, pixCount = 0;
-				while(i <= blurThreshold){
+				for(int i = x - blurThreshold < 0 ? x * -1 : blurThreshold * -1; i <= blurThreshold; i++){
 					if(x+i == picWidth) break;
-					int j;
-					if(y - blurThreshold < 0)
-						j = y * -1;
-					else
-						j = blurThreshold * -1;
-					
-					while(j <= blurThreshold){
+					for(int j = y - blurThreshold < 0 ? y * -1 : blurThreshold * -1; j <= blurThreshold; j++){
 						if(y+j == picHeight) break;
 						Pixel ref = this.getPixel(x+i, y+j);
 						aveA += ref.getAlpha();
@@ -655,9 +643,7 @@ public class Picture extends SimplePicture
 						aveG += ref.getGreen();
 						aveB += ref.getBlue();
 						pixCount++;
-						j++;
 					}
-					i++;
 				}
 				aveA /= pixCount;
 				aveR /= pixCount;
@@ -681,91 +667,61 @@ public class Picture extends SimplePicture
 	 * 	the new color provided. 
 	 */
 	public Picture paintBucket(int xReference, int yReference, int threshold, Color newColor) {
-		Picture newPicture = new Picture(this);
-		Pixel base = new Pixel(this, xReference, yReference);
-		int picHeight = this.getHeight();
+		Picture newPicture = new Picture(this); //the picture resource that will be modified
+		Color base = this.getPixel(xReference, yReference).getColor(); // the original base color to compare against
+		int picHeight = this.getHeight(); //saving time, saving the int of the picture height and width as ints beforehand.
 		int picWidth = this.getWidth();
 
 		int x = 0, y = 0;
-		ArrayList<Point> queue = new ArrayList<Point>();
-		Point temp = new Point(xReference, yReference);
-		queue.add(temp);
-		for(int i = 0; i < queue.size(); i++){
-			Point point = queue.get(i);
-			x = point.x;
-			y = point.y;
-			Pixel current = newPicture.getPixel(x, y);
+		ArrayList<Integer> queue = new ArrayList<Integer>(); //the arrayList to hold all the points with x preceding y always.
+		queue.add(xReference); //add the x reference int
+		queue.add(yReference); //add the y reference int
+		
+		//the main driver loop for Paint Bucker. This is based on a Queue, which holds all the points that need to be filled in. implemented as ints because of speed.
+		for(int i = 0; i < queue.size(); i++){ 
+			x = queue.get(i++); //grabs the x coordinate then iterates
+			y = queue.get(i); // grabs the y coordinate
+			Pixel current = newPicture.getPixel(x, y); //because we already know the pixel read in has been tested, whether because its the start or another point we go ahead an set it
 			current.setColor(newColor);
+			int[][] points = new int[8][2]; //an array to hold the surround points to be tested
+			points[0][0] = x+1; points[0][1] = y;
+			points[1][0] = x-1; points[1][1] = y;
+			points[2][0] = x;   points[2][1] = y+1;
+			points[3][0] = x;   points[3][1] = y-1;
+			points[4][0] = x+1; points[4][1] = y-1;
+			points[5][0] = x-1; points[5][1] = y-1;
+			points[6][0] = x-1; points[6][1] = y+1;
+			points[7][0] = x+1; points[7][1] = y+1;
 			
+			//The test loop to test the points for validity and then add the to the array if they are valid.
+			for(int[] p : points){
+				int x2 = p[0];
+				int y2 = p[1];
+				boolean contained = true;
+				
+				//a loop to test if they are already in the array and therefore do not need to be added again
+				for(int k = 0; k < queue.size()-1; k+=2){
+					if(queue.get(k) == x2 && queue.get(k+1) == y2){
+						contained = false;
+						break;
+					}
+						
+				}
+				// this clause makes sure the pixel is within the picture, and then adds them to the queue if it is.
+				if(x2 >= 0 && x2 < picWidth && y2 >= 0 && y2 < picHeight && contained){
+					Pixel pix = this.getPixel(x2, y2);
+					if((int) pix.colorDistance(base) < threshold){
+						queue.add(x2);
+						queue.add(y2);
 
-			Point e = new Point(x+1, y);
-			if(!queue.contains(e))
-				if(x + 1 < picWidth){
-					Pixel east = this.getPixel(x + 1, y);
-					if(((int) east.colorDistance(base.getColor())) < threshold){
-						queue.add(e);
 					}
 				}
-			Point w = new Point(x-1, y);
-			if(!queue.contains(w))
-				if(x - 1 >= 0){
-					Pixel west = this.getPixel(x - 1, y);
-					if(((int) west.colorDistance(base.getColor())) < threshold){
-						queue.add(w);
-					}
-				}
-			Point s = new Point(x, y+1);
-			if(!queue.contains(s))
-				if(y + 1 < picHeight){
-					Pixel east = this.getPixel(x, y + 1);
-					if(((int) east.colorDistance(base.getColor())) < threshold){
-						queue.add(s);
-					}
-				}
-			Point n = new Point(x, y-1);
-			if(!queue.contains(n))
-				if(y - 1 >= 0){
-					Pixel east = this.getPixel(x, y - 1);
-					if(((int) east.colorDistance(base.getColor())) < threshold){
-						queue.add(n);
-					}
-				}
-			Point nw = new Point(x-1, y-1);
-			if(!queue.contains(nw))
-				if(y - 1 >= 0 && x - 1 >= 0){
-					Pixel northWest = this.getPixel(x - 1, y - 1);
-					if(((int) northWest.colorDistance(base.getColor())) < threshold){
-						queue.add(nw);
-					}
-				}
-			Point ne = new Point(x+1, y-1);
-			if(!queue.contains(ne))
-				if(y - 1 >= 0 && x + 1 < picWidth){
-					Pixel northEast = this.getPixel(x + 1, y - 1);
-					if(((int) northEast.colorDistance(base.getColor())) < threshold){
-						queue.add(ne);
-					}
-				}
-			Point sw = new Point(x-1, y+1);
-			if(!queue.contains(sw))
-				if(y + 1 < picHeight && x - 1 >= 0){
-					Pixel southWest = this.getPixel(x - 1, y + 1);
-					if(((int) southWest.colorDistance(base.getColor())) < threshold){
-						queue.add(sw);
-					}
-				}
-			Point se = new Point(x+1, y+1);
-			if(!queue.contains(se))
-				if(y + 1 < picHeight && x + 1 < picWidth){
-					Pixel southEast = this.getPixel(x + 1, y + 1);
-					if(((int) southEast.colorDistance(base.getColor())) < threshold){
-						queue.add(se);
-					}
-				}
+			}		
 		}
+		//return the newpicture, leavin the original unblemished.
 		return newPicture;
 	}
-	
+
 	///////////////////////// PROJECT 1 ENDS HERE /////////////////////////////
 
 	public boolean equals(Object obj) {
