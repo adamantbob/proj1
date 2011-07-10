@@ -148,7 +148,6 @@ public class PictureTest extends TestCase {
 		Picture picCorrect	= Picture.loadPicture("Creek_blur.bmp");
 		Picture picTest		= pic.blur(3);
 		assertTrue(pic.equals(picCopy));
-		picTest.show();
 		assertTrue(picCorrect.equals(picTest));
 	}
 	/*
