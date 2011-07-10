@@ -245,7 +245,6 @@ public class PictureTest extends TestCase {
 		Picture picCorrect	= Picture.loadPicture("Colleen_paintBucket.bmp");
 		Picture picTest		= pic.paintBucket(118, 54, 30, new Color(0, 255, 0));
 		assertTrue(pic.equals(picCopy));
-		picTest.show();
 		assertTrue(picCorrect.equals(picTest));
 	}
 	/*
