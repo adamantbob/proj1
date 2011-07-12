@@ -196,6 +196,7 @@ public class Picture extends SimplePicture
 		int pictureHeight = this.getHeight();
 		int pictureWidth = this.getWidth();
 
+		//run through each pixel and set each channel(except alpha) to its photo-negative (255-value).
 		for(int x = 0; x < pictureWidth; x++) {
 			for(int y = 0; y < pictureHeight; y++) {
 				Pixel p = new Pixel(newPicture, x, y);
@@ -218,6 +219,7 @@ public class Picture extends SimplePicture
 		int pictureHeight = this.getHeight();
 		int pictureWidth = this.getWidth();
 
+		//run through each pixel and add the specified amount to each channel (except alpha).
 		for(int x = 0; x < pictureWidth; x++) {
 			for(int y = 0; y < pictureHeight; y++) {
 				Pixel p = new Pixel(newPicture, x, y);
@@ -241,6 +243,7 @@ public class Picture extends SimplePicture
 	int pictureHeight = this.getHeight();
 	int pictureWidth = this.getWidth();
 
+	// run through each pixel and take the specified amount from each channel (except alpha) of the color.
 	for(int x = 0; x < pictureWidth; x++) {
 		for(int y = 0; y < pictureHeight; y++) {
 			Pixel p = new Pixel(newPicture, x, y);
@@ -264,6 +267,7 @@ public class Picture extends SimplePicture
 	int pictureHeight = this.getHeight();
 	int pictureWidth = this.getWidth();
 
+	//run through each pixel and add the specified amount to blue.
 	for(int x = 0; x < pictureWidth; x++) {
 		for(int y = 0; y < pictureHeight; y++) {
 			Pixel p = new Pixel(newPicture, x, y);
@@ -287,6 +291,7 @@ public class Picture extends SimplePicture
 		int pictureHeight = this.getHeight();
 		int pictureWidth = this.getWidth();
 
+		//run through each pixel and add the specified amount to red.
 		for(int x = 0; x < pictureWidth; x++) {
 			for(int y = 0; y < pictureHeight; y++) {
 				Pixel p = new Pixel(newPicture, x, y);
@@ -311,6 +316,7 @@ public class Picture extends SimplePicture
 		int pictureHeight = this.getHeight();
 		int pictureWidth = this.getWidth();
 
+		//run through each pixel and add the specified amount to green.
 		for(int x = 0; x < pictureWidth; x++) {
 			for(int y = 0; y < pictureHeight; y++) {
 				Pixel p = new Pixel(newPicture, x, y);
@@ -341,10 +347,11 @@ public class Picture extends SimplePicture
 		Picture newPicture = new Picture(this);
 		Pixel base = new Pixel(this, xReference, yReference);
 
-
+		//compares the two pictures, and sets the iterator breaks at the smaller of the two, pixels above that are irrelevant.
 		int pictureHeight = this.getHeight() > background.getHeight() ? background.getHeight() : this.getHeight();
 		int pictureWidth = this.getWidth() > background.getWidth() ? background.getWidth() : this.getWidth();
 		
+		//run through all the relevant pixels, comparing to the threshold and setting them accordingly.
 		for(int x = 0; x < pictureWidth; x++) {
 			for(int y = 0; y < pictureHeight; y++) {
 				Pixel p = new Pixel(newPicture, x, y);
@@ -371,13 +378,18 @@ public class Picture extends SimplePicture
 	 * @return A new Picture that is the rotated version of this Picture.
 	 */
 	public Picture rotate(int rotations) {
+		//this block adjusts for bounds outside of 0-3, the cases for rotations.
 		int adjustedRots = rotations % 4;
 		if(adjustedRots < 0){
 			adjustedRots += 4;
 		}
+		
 		int picHeight = this.getHeight();
 		int picWidth = this.getWidth();
 		Picture newPicture = null;
+		
+		//a switch case block for the different number of rotations. it will run through every pixel and set each one to its new spot in the new picture
+		//cases 1 and 3 require flipping of the dimensions.
 		switch(adjustedRots){
 		case 0: return this;
 		case 1: 
@@ -437,6 +449,9 @@ public class Picture extends SimplePicture
 		Picture newPicture;
 		int picHeight = this.getHeight();
 		int picWidth = this.getWidth();
+		//I use a switch case block in this method because there is a set number of cases and the idea is pretty similar each time.
+		//Horizontal and Vertical don't switch the axes, where as Diagonals do so the setup is different.
+		//in each case run through all the pixels and set them to their new location in the flipped picture.
 		switch(axis){
 		case Picture.HORIZONTAL:
 			newPicture = new Picture(picWidth, picHeight);
@@ -501,9 +516,14 @@ public class Picture extends SimplePicture
 	 *         white.
 	 */
 	public Picture showEdges(int threshold) {
-		Picture newPicture = new Picture(this);
+		Picture newPicture = new Picture(this); //clone the picture
 		int picWidth = newPicture.getWidth();
 		int picHeight = newPicture.getHeight();
+		//I use a four step process to show the edges.
+		//first the set the 0,0 pixel to white automatically, since it has no comparison points
+		newPicture.setBasicPixel(0, 0, new Color(255, 255, 255).getRGB());
+		
+		//I then run through the row y=0 comparing only to the west, as there are no northern pixels.
 		for(int x = 1; x < picWidth; x++){
 			Pixel testPoint = new Pixel(newPicture, x, 0);
 			Pixel reference2 = new Pixel(this, x-1, 0);
@@ -512,6 +532,8 @@ public class Picture extends SimplePicture
 			else
 				testPoint.updatePicture(255, 255, 255, 255);
 		}
+		
+		//then the column x=0 comparing only north, as the west pixels don't exist.
 		for(int y = 1; y < picHeight; y++){
 			Pixel testPoint = new Pixel(newPicture, 0, y);
 			Pixel reference1 = new Pixel(this, 0, y-1);
@@ -520,6 +542,8 @@ public class Picture extends SimplePicture
 			else
 				testPoint.updatePicture(255, 255, 255, 255);
 		}
+		
+		//the final case is all the other pixels, where both the west and the northern pixels exist, compare to both and if one satisfies set it the black.
 		for(int x = 1; x < picWidth; x++){
 			for(int y = 1; y < picHeight; y++){
 				Pixel testPoint = new Pixel(newPicture, x, y);
@@ -533,7 +557,6 @@ public class Picture extends SimplePicture
 					testPoint.updatePicture(255, 255, 255, 255);
 			}
 		}
-		newPicture.setBasicPixel(0, 0, new Color(255, 255, 255).getRGB());
 		return newPicture;
 	}
 
@@ -575,23 +598,27 @@ public class Picture extends SimplePicture
 	 * 	partially copied to the final Picture. 
 	 */
 	public Picture convertToAscii() {
-		Picture newPicture = grayscale();
+		Picture newPicture = grayscale(); //clone the 'this' into a grayscale so we can ignore various values in the averaging.
 		int picHeight = newPicture.getHeight();
 		int picWidth = newPicture.getWidth();
+		
+		//runs through the pictures in 10x20 chunks, the size of the characters.
 		for(int x = 0; x < picWidth; x+=10){
 			for(int y = 0; y < picHeight; y+=20){
 				int average = 0;
 				int pixCount = 0;
+				//for each chunk it runs through all the pixels and averages them to get the fill level and corresponding character
 				for(int i = 0; i < 10; i++){
 					if(x+i == picWidth) break;
 					for(int j = 0; j < 20; j++){
 						if(y+j == picHeight) break;
 						pixCount++;
-						average += newPicture.getPixel(x+i, y+j).getRed();
+						average += newPicture.getPixel(x+i, y+j).getRed(); //it would work with any of the RGB values, red was chosen for no particular reason.
 					}
 				}
 				average /= pixCount;
 				Picture ascii = getAsciiPic(average);
+				//this set of loops sets the pixels in the 10x20 chunk to the ASCII character values.
 				for(int i = 0; i < 10; i++){
 					if(x+i == picWidth) break;
 					for(int j = 0; j < 20; j++){
@@ -626,23 +653,29 @@ public class Picture extends SimplePicture
 	 *         a blurring square of size (2 * threshold) + 1.
 	 */
 	public Picture blur(int blurThreshold){
-		Picture newPicture = new Picture(this);
+		Picture newPicture = new Picture(this); //clone the picture
 		int picHeight = newPicture.getHeight();
 		int picWidth = newPicture.getWidth();
+		
+		//sets up the double nested for loop to iterate through every pixel in the picture
 		for(int x = 0; x < picWidth; x++){
 			for(int y = 0; y < picHeight; y++){
-				Pixel testPix = newPicture.getPixel(x, y);
-				int aveA = 0, aveR = 0, aveG = 0, aveB = 0, pixCount = 0;
+				Pixel testPix = newPicture.getPixel(x, y); // get the pixel that will be changed in the new picture
+				int aveA = 0, aveR = 0, aveG = 0, aveB = 0, pixCount = 0; //set up the averagers
+				
+				//this is the inner double nested for loops to iterate through the box to average around.
+				//I've used the shorthand if notation to simplify the amount of set up.
+				//these loop run from -blurThreshold to +blurThreshold.
 				for(int i = x - blurThreshold < 0 ? x * -1 : blurThreshold * -1; i <= blurThreshold; i++){
 					if(x+i == picWidth) break;
 					for(int j = y - blurThreshold < 0 ? y * -1 : blurThreshold * -1; j <= blurThreshold; j++){
 						if(y+j == picHeight) break;
-						Pixel ref = this.getPixel(x+i, y+j);
+						Pixel ref = this.getPixel(x+i, y+j); //the pixel that we are summing. !!taken from the original picture.
 						aveA += ref.getAlpha();
 						aveR += ref.getRed();
 						aveG += ref.getGreen();
 						aveB += ref.getBlue();
-						pixCount++;
+						pixCount++; //increase the pixel count, because in the edge cases we aren't certain the pixel count is always static.
 					}
 				}
 				aveA /= pixCount;
@@ -654,7 +687,7 @@ public class Picture extends SimplePicture
 		}
 		return newPicture;
 	}
-
+	
 	/**
 	 * @param xReference x-coordinate of the pixel currently selected.
 	 * @param yReference y-coordinate of the pixel currently selected.
